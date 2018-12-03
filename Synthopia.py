@@ -10,15 +10,19 @@ size = (width, height)
 black = (0, 0, 0)
 white = (255, 255, 255)
 purple =(128, 0, 128)
+green = (0, 255, 0)
+grey = (128, 128, 128)
 
 
 gameDisplay = pygame.display.set_mode(size)
 pygame.display.set_caption('Synthopia: Bastion of Scrap')
 clock = pygame.time.Clock()
 
+
 def text_objects(text, font):
     textSurface = font.render(text, True, black)
     return textSurface, textSurface.get_rect()
+
 
 def mainscreen():
     main = True
@@ -30,10 +34,14 @@ def mainscreen():
 
         gameDisplay.fill(white)
         #Title = pygame.font.Font('')
-        largeText = pygame.font.Font('freesansbold.ttf',50)
+        largeText = pygame.font.Font('freesansbold.ttf', 50)
         TextSurf, TextRec = text_objects('Synthopia: Bastion of Scrap', largeText)
         TextRec.center = (width/2, ((height/2) - 100))
         gameDisplay.blit(TextSurf, TextRec)
+        pygame.draw.rect(gameDisplay, grey, (((width/2)-50), height/2,100,50))
+        #pygame.draw.rect(gameDisplay, grey, ((width - 150), 25, 100, 50)) for in game settings
+        pygame.draw.rect(gameDisplay, grey, (((width / 2) - 200), height / 2, 100, 50))
+        pygame.draw.rect(gameDisplay, grey, (((width / 2) + 100), height / 2, 100, 50))
         pygame.display.update()
 
 
