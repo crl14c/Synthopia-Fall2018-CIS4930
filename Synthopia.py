@@ -1,114 +1,58 @@
 import pygame
-
-from PyQt5 import QtWidgets, QtCore, QtGui
 import sys
 
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
+pygame.init()
+width = 1300
+height = 680
+size = (width, height)
+
+#colors
+black = (0, 0, 0)
+white = (255, 255, 255)
+purple =(128, 0, 128)
 
 
-class Game():
-    def __init__(self):
-        pygame.init()
-        self.game_init()
+gameDisplay = pygame.display.set_mode(size)
+pygame.display.set_caption('Synthopia: Bastion of Scrap')
+clock = pygame.time.Clock()
 
-    def game_init(self):
-        self.size = 0
+def text_objects(text, font):
+    textSurface = font.render(text, True, black)
+    return textSurface, textSurface.get_rect()
 
-    #pygame main loop here
-    def loop(self, window):
+def mainscreen():
+    main = True
+    while main:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                return True
+                pygame.quit()
+                quit()
 
-        return False
-
-
-class Data:
-    def __init__(self):
-        self.option = 0
-
-
-class MainWindow(QtWidgets.QMainWindow, Data):
-    def __init__(self, game):
-        QtWidgets.QMainWindow.__init__(self)
-        super().__init__()
-        self.fullscreen = 0
-        self.option = 0
-        self.setup()
-        self.init_pygame(game)
-
-    def setup(self):
-        self.setWindowTitle('Synthopia: Bastion of Scrap')
-        self.buttons()
-        if self.fullscreen == 0:
-            self.showMaximized()
-        else:
-            self.showFullScreen()
-
-    def init_pygame(self, game):
-        self.game = game
-        self.timer = QtCore.QTimer()
-        self.timer.timeout.connect(self.pygame_loop)
-        self.timer.start(0)
-
-    def pygame_loop(self):
-        if self.game.loop(self):
-            self.close()
-
-    def buttons(self):
-        print(self.option)
-        self.settings = QtWidgets.QPushButton("Settings", self)
-        self.settings.move(1250, 10)
-        self.exit = QtWidgets.QPushButton("Exit", self)
-        self.exit.move(600, 400)
-        self.play = QtWidgets.QPushButton("Play", self)
-        self.play.move(600, 350)
-        self.exitsettings = QtWidgets.QPushButton("Exit Settings", self)
-        self.exitsettings.move(1250, 50)
-        if self.option == 0:
-            self.exitsettings.setVisible(False)
-            self.settings.setVisible(True)
-            self.exit.setVisible(True)
-            self.play.setVisible(True)
-            self.settings.clicked.connect(self.settingsOpen)
-            self.exit.clicked.connect(self.close)
-            self.play.clicked.connect(self.playGame)
-        if self.option == 1:
-            print("asdasdasdasda")
-            self.exitsettings.setVisible(True)
-            self.exit.setVisible(False)
-            self.exitsettings.clicked.connect(self.backToMain)
-
-    def settingsOpen(self):
-        self.option = 1
-        self.buttons()
-        self.setup()
+        gameDisplay.fill(white)
+        #Title = pygame.font.Font('')
+        largeText = pygame.font.Font('freesansbold.ttf',50)
+        TextSurf, TextRec = text_objects('Synthopia: Bastion of Scrap', largeText)
+        TextRec.center = (width/2, ((height/2) - 100))
+        gameDisplay.blit(TextSurf, TextRec)
+        pygame.display.update()
 
 
-    def backToMain(self):
-        self.option = 0
-        self.buttons()
-        self.setup()
+def gameloop():
+    run = True
 
-    def playGame(self):
-        self.option = 2
-        self.buttons()
-        self.setup()
+    while run:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
 
-
-class DrawImage(QtWidgets.QWidget):
-    def __init__(self, parent):
-        QtWidgets.QWidget.__init__(self, parent)
-
-    def paintEvent(self, event):
-        qp = QtGui.QPainter()
-
-        qp.end()
+        gameDisplay.fill(white)
+        pygame.display.update()
+        clock.tick(60)
 
 
-if __name__ == "__main__":
-    game = Game()
-    app = QtWidgets.QApplication(sys.argv)
-    main_window = MainWindow(game)
-    app.exec_()
+all_fonts = pygame.font.get_fonts()
+mainscreen()
+gameloop()
+pygame.quit()
+quit()
