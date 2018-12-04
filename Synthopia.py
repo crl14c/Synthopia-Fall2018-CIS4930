@@ -122,6 +122,51 @@ def settings():
         clock.tick(15)
 
 
+def unpause():
+    global pause
+    pause = False
+
+
+def paused():
+    largeText = pygame.font.SysFont("comicsansms",70)
+    TextSurf, TextRect = text_objects("Paused", largeText)
+    TextRect.center = ((width / 2), (height / 2) - 150)
+    gameDisplay.blit(TextSurf, TextRect)
+
+    while pause:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
+        mouse = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()
+        if ((width / 2) - 100) > mouse[0] > (width / 2) - 200 and (height/2 + 100) > mouse[1] > (height/2):
+            pygame.draw.rect(gameDisplay, lightblue, (((width / 2) - 200), height / 2, 100, 50))
+            if click[0] == 1:
+                gameloop()
+        else:
+            pygame.draw.rect(gameDisplay, grey, (((width / 2) - 200), height / 2, 100, 50))
+
+        if ((width / 2) + 200) > mouse[0] > (width / 2) + 100 and (height/2)+100 > mouse[1] > (height/2):
+            pygame.draw.rect(gameDisplay, lightblue, (((width / 2) + 100), height / 2, 100, 50))
+            if click[0] == 1:
+                pygame.quit()
+                quit()
+        else:
+            pygame.draw.rect(gameDisplay, grey, (((width / 2) + 100), height / 2, 100, 50))
+
+        smallText = pygame.font.Font('freesansbold.ttf', 20)
+        textSurf, textRec = text_objects("Unpause", smallText)
+        textRec.center = ((width / 2) - 150, height / 2 + 25)
+        gameDisplay.blit(textSurf, textRec)
+        textSurf, textRec = text_objects("Exit", smallText)
+        textRec.center = ((width / 2) + 150, height / 2 + 25)
+        gameDisplay.blit(textSurf, textRec)
+        pygame.display.update()
+        clock.tick(15)
+
+
 def gameloop():
     run = True
 
@@ -131,7 +176,27 @@ def gameloop():
                 pygame.quit()
                 quit()
 
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_p:
+                    global pause
+                    pause = True
+                    paused()
+
         gameDisplay.fill(white)
+        mouse = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()
+        if width - 50 > mouse[0] > (width - 150) and 150 > mouse[1] > 50:
+            pygame.draw.rect(gameDisplay, lightblue, ((width - 150), 50, 100, 50))
+            if click[0] == 1:
+                pause = True
+                paused()
+        else:
+            pygame.draw.rect(gameDisplay, grey, ((width - 150), 50, 100, 50))
+
+        smallText = pygame.font.Font('freesansbold.ttf', 20)
+        textSurf, textRec = text_objects("Pause", smallText)
+        textRec.center = ((width - 100), 75)
+        gameDisplay.blit(textSurf, textRec)
         pygame.display.update()
         clock.tick(60)
 
