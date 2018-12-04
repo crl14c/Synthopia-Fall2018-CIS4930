@@ -9,7 +9,7 @@ size = (width, height)
 #colors
 black = (0, 0, 0)
 white = (255, 255, 255)
-purple = (128, 0, 128)
+purple = (175, 0, 175)
 green = (0, 255, 0)
 grey = (205, 205, 205)
 lightblue = (173, 216, 230)
@@ -156,9 +156,19 @@ def paused():
         else:
             pygame.draw.rect(gameDisplay, grey, (((width / 2) + 100), height / 2, 100, 50))
 
+        if ((width / 2) + 75) > mouse[0] > (width / 2) - 75 and (height / 2) + 200 > mouse[1] > (height / 2) + 100:
+            pygame.draw.rect(gameDisplay, lightblue, ((width / 2) - 75, (height / 2) + 100, 150, 50))
+            if click[0] == 1:
+                mainscreen()
+        else:
+            pygame.draw.rect(gameDisplay, grey, ((width / 2) - 75, (height / 2) + 100, 150, 50))
+
         smallText = pygame.font.Font('freesansbold.ttf', 20)
         textSurf, textRec = text_objects("Unpause", smallText)
         textRec.center = ((width / 2) - 150, height / 2 + 25)
+        gameDisplay.blit(textSurf, textRec)
+        textSurf, textRec = text_objects("Main Menu", smallText)
+        textRec.center = (width / 2, (height / 2) + 125)
         gameDisplay.blit(textSurf, textRec)
         textSurf, textRec = text_objects("Exit", smallText)
         textRec.center = ((width / 2) + 150, height / 2 + 25)
@@ -167,8 +177,26 @@ def paused():
         clock.tick(15)
 
 
+def placeTurret():
+    #function to the turret in the turret place
+    smallText = pygame.font.Font('freesansbold.ttf', 20)
+    textSurf, textRec = text_objects("Exit", smallText)
+    textRec.center = ((width / 2) + 150, height / 2 + 25)
+    gameDisplay.blit(textSurf, textRec)
+
+
+def turret(click, mouse, w, h, p):
+    if w + 50 > mouse[0] > w and h + 50 > mouse[1] > h:
+        pygame.draw.rect(gameDisplay, purple, (w, h, 50, 50))
+        if click[0] == 1 and p:
+            placeTurret()
+    else:
+        pygame.draw.rect(gameDisplay, grey, (w, h, 50, 50))
+
+
 def gameloop():
     run = True
+    placingTurret = False
 
     while run:
         for event in pygame.event.get():
@@ -185,6 +213,7 @@ def gameloop():
         gameDisplay.fill(white)
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
+        '''pause button box made here'''
         if width - 50 > mouse[0] > (width - 150) and 150 > mouse[1] > 50:
             pygame.draw.rect(gameDisplay, lightblue, ((width - 150), 50, 100, 50))
             if click[0] == 1:
@@ -192,6 +221,31 @@ def gameloop():
                 paused()
         else:
             pygame.draw.rect(gameDisplay, grey, ((width - 150), 50, 100, 50))
+        '''Click to place Turret'''
+        if 100 > mouse[0] > 0 and 150 > mouse[1] > 50:
+            pygame.draw.rect(gameDisplay, grey, (0, 50, 100, 100))
+            if click[0] == 1:
+                if not placingTurret:
+                    placingTurret = True
+                elif placingTurret:
+                    placingTurret = False
+
+        else:
+            pygame.draw.rect(gameDisplay, grey, (0, 50, 100, 100))
+        '''Turret places being drawn'''
+        turret(click, mouse, 75, height - 75, placingTurret)
+        turret(click, mouse, 175, height - 175, placingTurret)
+        turret(click, mouse, 275, height - 75, placingTurret)
+        turret(click, mouse, 375, height - 175, placingTurret)
+        turret(click, mouse, 475, height - 75, placingTurret)
+        turret(click, mouse, 562.5, height - 175, placingTurret)
+        turret(click, mouse, 650, height - 75, placingTurret)
+        turret(click, mouse, 737.5, height - 175, placingTurret)
+        turret(click, mouse, 825, height - 75, placingTurret)
+        turret(click, mouse, 912.5, height - 175, placingTurret)
+        turret(click, mouse, 1000, height - 75, placingTurret)
+        turret(click, mouse, 1075, height - 175, placingTurret)
+        turret(click, mouse, 1150, height - 75, placingTurret)
 
         smallText = pygame.font.Font('freesansbold.ttf', 20)
         textSurf, textRec = text_objects("Pause", smallText)
