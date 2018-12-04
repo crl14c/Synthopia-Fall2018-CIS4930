@@ -9,9 +9,9 @@ size = (width, height)
 #colors
 black = (0, 0, 0)
 white = (255, 255, 255)
-purple =(128, 0, 128)
+purple = (128, 0, 128)
 green = (0, 255, 0)
-grey = (128, 128, 128)
+grey = (205, 205, 205)
 lightblue = (173, 216, 230)
 
 
@@ -42,17 +42,15 @@ def mainscreen():
 
         #pygame.draw.rect(gameDisplay, grey, ((width - 150), 25, 100, 50)) for in game settings
 
-
-
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
 
-        if ((width/2) + 50) > mouse[0] > (width/2)-50 and ((height / 2) + 100) > mouse[1] > (height / 2):
-            pygame.draw.rect(gameDisplay, lightblue, (((width / 2) - 50), height / 2, 100, 50))
+        if width - 50 > mouse[0] > (width - 150) and 150 > mouse[1] > 50:
+            pygame.draw.rect(gameDisplay, lightblue, ((width - 150), 50, 100, 50))
             if click[0] == 1:
                 settings()
         else:
-            pygame.draw.rect(gameDisplay, grey, (((width / 2) - 50), height / 2, 100, 50))
+            pygame.draw.rect(gameDisplay, grey, ((width - 150), 50, 100, 50))
 
         if ((width / 2) - 100) > mouse[0] > (width / 2) - 200 and (height/2 + 100) > mouse[1] > (height/2):
             pygame.draw.rect(gameDisplay, lightblue, (((width / 2) - 200), height / 2, 100, 50))
@@ -69,32 +67,59 @@ def mainscreen():
         else:
             pygame.draw.rect(gameDisplay, grey, (((width / 2) + 100), height / 2, 100, 50))
 
-
         smallText = pygame.font.Font('freesansbold.ttf', 20)
         textSurf, textRec = text_objects("Play", smallText)
         textRec.center = ((width / 2) - 150, height/2 + 25)
         gameDisplay.blit(textSurf, textRec)
         textSurf, textRec = text_objects("Settings", smallText)
-        textRec.center = ((width / 2) , height / 2 + 25)
+        textRec.center = ((width - 100), 75)
         gameDisplay.blit(textSurf, textRec)
         textSurf, textRec = text_objects("Exit", smallText)
         textRec.center = ((width / 2) + 150, height / 2 + 25)
         gameDisplay.blit(textSurf, textRec)
-
-
         pygame.display.update()
 
 
 def settings():
-    run = True
-    while run:
+    gameDisplay.fill(white)
+    largeText = pygame.font.SysFont("comicsansms", 50)
+    TextSurf, TextRect = text_objects("Settings", largeText)
+    TextRect.center = ((width / 2), (height / 2 - 150))
+    gameDisplay.blit(TextSurf, TextRect)
+
+    while True:
         for event in pygame.event.get():
+            # print(event)
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-                
-        gameDisplay.fill(white)
+
+        mouse = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()
+        if ((width / 2) + 75) > mouse[0] > (width / 2) - 75 and (height/2 + 50) > mouse[1] > (height/2) - 50:
+            pygame.draw.rect(gameDisplay, lightblue, (((width / 2) - 75), (height / 2) - 50, 150, 50))
+            if click[0] == 1:
+                mainscreen()
+        else:
+            pygame.draw.rect(gameDisplay, grey, (((width / 2) - 75), (height / 2) - 50, 150, 50))
+
+        if ((width / 2) + 50) > mouse[0] > (width / 2) - 50 and (height/2) + 250 > mouse[1] > (height/2) + 150:
+            pygame.draw.rect(gameDisplay, lightblue, (((width / 2) - 50), (height / 2) + 150, 100, 50))
+            if click[0] == 1:
+                pygame.quit()
+                quit()
+        else:
+            pygame.draw.rect(gameDisplay, grey, (((width / 2) - 50), (height / 2) + 150, 100, 50))
+
+        smallText = pygame.font.Font('freesansbold.ttf', 20)
+        textSurf, textRec = text_objects("Main Menu", smallText)
+        textRec.center = ((width / 2), height / 2 - 25)
+        gameDisplay.blit(textSurf, textRec)
+        textSurf, textRec = text_objects("Exit", smallText)
+        textRec.center = (width / 2, height / 2 + 175)
+        gameDisplay.blit(textSurf, textRec)
         pygame.display.update()
+        clock.tick(15)
 
 
 def gameloop():
