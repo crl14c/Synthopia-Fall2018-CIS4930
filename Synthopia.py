@@ -298,11 +298,12 @@ class Ship(pygame.sprite.Sprite):
                 surf.blit(bullet.image, bullet.rect)
         surf.blit(bullet.image, bullet.rect)
 
+
 class Laser:
     def __init__(self, loc, screen_rect):
         self.screen_rect = screen_rect
         self.image = pygame.Surface((5,20)).convert_alpha()
-        self.mask =pygame.mask.from_surface(self.image)
+        self.mask = pygame.mask.from_surface(self.image)
         self.image.fill((255, 0 ,0))
         self.rect = self.image.get_rect(center = loc)
         self.speed = 5
@@ -425,15 +426,13 @@ def gameloop():
 
         gameDisplay.blit(textSurfMoney, textRecMoney)
         gameDisplay.blit(textSurfHealth, textRecHealth)
-
-
-        #if start == False:
-        enemies.update(player)
-
         turretGroup.draw(gameDisplay)
-        enemies.draw(gameDisplay)
-        for e in enemyarray[:]:
-            e.draw(gameDisplay)
+
+        if start == False:
+            enemies.update(player)
+            enemies.draw(gameDisplay)
+            for e in enemyarray[:]:
+                e.draw(gameDisplay)
 
 
 
