@@ -88,7 +88,7 @@ def mainscreen():
 def settings():
     gameDisplay.fill(white)
     largeText = pygame.font.SysFont("comicsansms", 50)
-    TextSurf, TextRect = text_objects("Settings", largeText)
+    TextSurf, TextRect = text_objects("Settings", largeText, white)
     TextRect.center = ((width / 2), (height / 2 - 150))
     gameDisplay.blit(TextSurf, TextRect)
     img = pygame.image.load('resources/space.jpg')
