@@ -201,6 +201,7 @@ def gameloop():
     placingTurret = False
     start = True
     money = 0
+    health=1000
     start_ticks = pygame.time.get_ticks()
     font = pygame.font.SysFont('Consolas', 30)
     smallText = pygame.font.Font('freesansbold.ttf', 20)
@@ -265,14 +266,21 @@ def gameloop():
         textRec2.center = ((width-100), 200)
         textSurf3, textRec3 = text_objects("You have 60 seconds to place your turrets.", font, white)
         textRec3.center = ((width-650), 200)
+        textSurf4, textRec4 = text_objects("Turret Place Active", smallText, white)
+        textRec4.center = ((width/2), height/2)
         gameDisplay.blit(textSurf, textRec)
         if seconds > 0:
             gameDisplay.blit(textSurf2, textRec2)
+        elif seconds <=0:
+            start = False
 
         if seconds > 30:
             gameDisplay.blit(textSurf3,textRec3)
-        pygame.display.update()
 
+        if placingTurret:
+            gameDisplay.blit(textSurf4, textRec4)
+
+        pygame.display.update()
 
 
 all_fonts = pygame.font.get_fonts()
