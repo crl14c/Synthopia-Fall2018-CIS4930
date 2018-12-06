@@ -1,5 +1,6 @@
 import pygame
 import sys
+import random
 
 pygame.init()
 pygame.mixer.init()
@@ -214,9 +215,24 @@ def turret(click, mouse, w, h, p, st, m):
 class Ship(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
+        self.health = random.randint(75, 150)
         self.image = pygame.image.load(shipfile)
+        self.image = pygame.transform.rotate(self.image,180)
         self.rect = self.image.get_rect()
-        self.rect.center = (width / 2, height / 2)
+        self.rect.center = (width / 2, 0)
+        self.movement = 2
+
+    def update(self):
+        self.rect.x += self.movement
+        self.rect.y += .2
+        if self.rect.right > width:
+            self.movement = self.movement*-1  -1
+
+        if self.rect.left < 0:
+            self.movement = 1 + self.movement*-1
+
+
+
 
 
 def gameloop():
@@ -232,6 +248,10 @@ def gameloop():
     smallText = pygame.font.Font('freesansbold.ttf', 20)
     status = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     imgTurret = pygame.image.load('resources/turret.png')
+    enemies = pygame.sprite.Group()
+    if enemies.empty:
+        ship = Ship()
+        enemies.add(ship)
 
     while run:
         seconds = 60 - (pygame.time.get_ticks() - start_ticks) / 1000
@@ -348,11 +368,7 @@ def gameloop():
         textSurf9, textRec9 = text_objects("250$", smallText, black)
         textRec9.center = (50, 400)
         gameDisplay.blit(textSurf, textRec)
-        enemies = pygame.sprite.Group()
-        shipfile = "spaceship1.png"
-        ship = Ship()
-        enemies.add(ship)
-        enemies.draw(gameDisplay)
+
         gameDisplay.blit(textSurf9, textRec9)
         gameDisplay.blit(textSurf8, textRec8)
         gameDisplay.blit(textSurf7, textRec7)
@@ -372,7 +388,15 @@ def gameloop():
         gameDisplay.blit(textSurfMoney, textRecMoney)
         gameDisplay.blit(textSurfHealth, textRecHealth)
 
+        shipfile = "spaceship1.png"
+        #if start == False:
+
+
+        enemies.draw(gameDisplay)
+        enemies.update()
         pygame.display.update()
+
+
 
 
 all_fonts = pygame.font.get_fonts()
