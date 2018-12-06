@@ -8,6 +8,11 @@ width = 1300
 height = 680
 shipfile = "resources/spaceship1.png"
 musicfile = "resources/mainmenu.wav"
+turretfile = "resources/turret.png"
+imgTurret = pygame.image.load('resources/turret.png')
+shipfile = "resources/spaceship1.png"
+font = pygame.font.SysFont('Consolas', 30)
+smallText = pygame.font.Font('freesansbold.ttf', 20)
 size = (width, height)
 
 #colors
@@ -154,7 +159,7 @@ def paused():
         if ((width / 2) - 100) > mouse[0] > (width / 2) - 200 and (height/2 + 100) > mouse[1] > (height/2):
             pygame.draw.rect(gameDisplay, lightblue, (((width / 2) - 200), height / 2, 100, 50))
             if click[0] == 1:
-                gameloop()
+                break
         else:
             pygame.draw.rect(gameDisplay, grey, (((width / 2) - 200), height / 2, 100, 50))
 
@@ -174,7 +179,7 @@ def paused():
             pygame.draw.rect(gameDisplay, grey, ((width / 2) - 75, (height / 2) + 100, 150, 50))
 
         smallText = pygame.font.Font('freesansbold.ttf', 20)
-        textSurf, textRec = text_objects("Unpause", smallText)
+        textSurf, textRec = text_objects("Resume", smallText)
         textRec.center = ((width / 2) - 150, height / 2 + 25)
         gameDisplay.blit(textSurf, textRec)
         textSurf, textRec = text_objects("Main Menu", smallText)
@@ -195,6 +200,10 @@ class Turret(pygame.sprite.Sprite):
         self.rect.x = w - 5
         self.rect.y = h - 90
 
+def placeTurret(w, h):
+    #function to the turret in the turret place
+    imgTurret = pygame.image.load('resources/turret.png')
+    gameDisplay.blit(imgTurret, (w - 5, h - 90))
 
 def turret(click, mouse, w, h, p, st, m, t):
     if w + 50 > mouse[0] > w and h + 50 > mouse[1] > h:
@@ -216,27 +225,96 @@ def turret(click, mouse, w, h, p, st, m, t):
             pygame.draw.rect(gameDisplay, pygame.Color(203, 132, 128, 1), (w, h, 50, 50))
             return 0, m, t
 
+class Player():
+    def __init__(self):
+        self.health = 1000
+        self.shield = 0
+        self.money = 600
+
+    def damagePlayer(self, damage):
+        self.health-=damage
+
+    def rewardPlayer(self, amount):
+        self.money += amount
+
 
 class Ship(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self,shipfile,player):
         pygame.sprite.Sprite.__init__(self)
         self.health = random.randint(75, 150)
         self.image = pygame.image.load(shipfile)
         self.image = pygame.transform.rotate(self.image,180)
         self.rect = self.image.get_rect()
-        self.rect.center = (width / 2, 0)
+        self.rect.center    = (width / 2, 0)
         self.movement = 2
+        self.dead = False
+        self.cooldown = False
+        self.timer =0
+        self.bullets = []
+        self.bulletcolor= (255, 0 , 0)
 
-    def update(self):
+
+    def update(self, player):
         self.rect.x += self.movement
-        self.rect.y += .2
+        self.rect.y += self.movement
         if self.rect.right > width:
-            self.movement = self.movement*-1  -1
+            self.movement = self.movement*-1
 
         if self.rect.left < 0:
-            self.movement = 1 + self.movement*-1
+            self.movement = self.movement*-1
+
+        if self.rect.top < 0:
+            self.rect.top = 0
+
+        if self.rect.bottom > height/2:
+            self.rect.bottom = height/2
+
+        if not self.cooldown:
+            self.fire()
+            self.cooldown = True
+
+        if self.cooldown:
+            x = pygame.time.get_ticks() / 1500
+            if self.timer < x:
+                self.timer +=1
+                self.cooldown = False
+
+        self.update_bullets(player)
 
 
+    def fire(self):
+        self.bullets.append(Laser(self.rect.center, self.bulletcolor))
+
+    def update_bullets(self,player):
+       if self.bullets:
+           for obj in self.bullets[:]:
+               obj.update()
+               if obj.rect.y >=680:
+                   player.damagePlayer(1)
+                   self.bullets.remove(obj)
+                   print("removed")
+
+    def draw(self,surf):
+        if self.bullets:
+            for bullet in self.bullets:
+
+                surf.blit(bullet.image, bullet.rect)
+        surf.blit(bullet.image, bullet.rect)
+
+class Laser:
+    def __init__(self, loc, screen_rect):
+        self.screen_rect = screen_rect
+        self.image = pygame.Surface((5,20)).convert_alpha()
+        self.mask =pygame.mask.from_surface(self.image)
+        self.image.fill((255, 0 ,0))
+        self.rect = self.image.get_rect(center = loc)
+        self.speed = 5
+
+    def update(self):
+        self.rect.y += self.speed
+
+    def render(self, surf):
+        surf.blit(self.image, self.rect)
 
 
 
@@ -246,18 +324,16 @@ def gameloop():
     run = True
     placingTurret = False
     start = True
-    money = 600
-    health = 1000
+    player = Player()
     start_ticks = pygame.time.get_ticks()
-    font = pygame.font.SysFont('Consolas', 30)
-    smallText = pygame.font.Font('freesansbold.ttf', 20)
     status = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    imgTurret = pygame.image.load('resources/turret.png')
     enemies = pygame.sprite.Group()
+    enemyarray = []
     if enemies.empty:
-        ship = Ship()
+        ship = Ship(shipfile, player)
         enemies.add(ship)
-
+        enemyarray.append(ship)
+    turretGroup = pygame.sprite.Group()
     while run:
         seconds = 60 - (pygame.time.get_ticks() - start_ticks) / 1000
         for event in pygame.event.get():
@@ -296,19 +372,19 @@ def gameloop():
 
         gameDisplay.blit(imgTurret, (0, 200))
         '''Turret places being drawn'''
-        status[0], money, turretGroup = turret(click, mouse, 75, height - 75, placingTurret, status[0], money, turretGroup)
-        status[1], money, turretGroup = turret(click, mouse, 175, height - 175, placingTurret, status[1], money, turretGroup)
-        status[2], money, turretGroup = turret(click, mouse, 275, height - 75, placingTurret, status[2], money, turretGroup)
-        status[3], money, turretGroup = turret(click, mouse, 375, height - 175, placingTurret, status[3], money, turretGroup)
-        status[4], money, turretGroup = turret(click, mouse, 475, height - 75, placingTurret, status[4], money, turretGroup)
-        status[5], money, turretGroup = turret(click, mouse, 562.5, height - 175, placingTurret, status[5], money, turretGroup)
-        status[6], money, turretGroup = turret(click, mouse, 650, height - 75, placingTurret, status[6], money, turretGroup)
-        status[7], money, turretGroup = turret(click, mouse, 737.5, height - 175, placingTurret, status[7], money, turretGroup)
-        status[8], money, turretGroup = turret(click, mouse, 825, height - 75, placingTurret, status[8], money, turretGroup)
-        status[9], money, turretGroup = turret(click, mouse, 912.5, height - 175, placingTurret, status[9], money, turretGroup)
-        status[10], money, turretGroup = turret(click, mouse, 1000, height - 75, placingTurret, status[10], money, turretGroup)
-        status[11], money, turretGroup = turret(click, mouse, 1075, height - 175, placingTurret, status[11], money, turretGroup)
-        status[12], money, turretGroup = turret(click, mouse, 1150, height - 75, placingTurret, status[12], money, turretGroup)
+        status[0], player.money, turretGroup = turret(click, mouse, 75, height - 75, placingTurret, status[0], player.money, turretGroup)
+        status[1], player.money, turretGroup = turret(click, mouse, 175, height - 175, placingTurret, status[1], player.money, turretGroup)
+        status[2], player.money, turretGroup = turret(click, mouse, 275, height - 75, placingTurret, status[2], player.money, turretGroup)
+        status[3], player.money, turretGroup = turret(click, mouse, 375, height - 175, placingTurret, status[3], player.money, turretGroup)
+        status[4], player.money, turretGroup = turret(click, mouse, 475, height - 75, placingTurret, status[4], player.money, turretGroup)
+        status[5], player.money, turretGroup = turret(click, mouse, 562.5, height - 175, placingTurret, status[5], player.money, turretGroup)
+        status[6], player.money, turretGroup = turret(click, mouse, 650, height - 75, placingTurret, status[6], player.money, turretGroup)
+        status[7], player.money, turretGroup = turret(click, mouse, 737.5, height - 175, placingTurret, status[7], player.money, turretGroup)
+        status[8], player.money, turretGroup = turret(click, mouse, 825, height - 75, placingTurret, status[8], player.money, turretGroup)
+        status[9], player.money, turretGroup = turret(click, mouse, 912.5, height - 175, placingTurret, status[9], player.money, turretGroup)
+        status[10], player.money, turretGroup = turret(click, mouse, 1000, height - 75, placingTurret, status[10], player.money, turretGroup)
+        status[11], player.money, turretGroup = turret(click, mouse, 1075, height - 175, placingTurret, status[11], player.money, turretGroup)
+        status[12], player.money, turretGroup = turret(click, mouse, 1150, height - 75, placingTurret, status[12], player.money, turretGroup)
 
         if status[0] == 1:
             placeTurret(75, height - 75)
@@ -341,9 +417,9 @@ def gameloop():
         textRec.center = ((width - 100), 75)
         textSurf2, textRec2 = text_objects(str(round(seconds)),font, white)
         textRec2.center = ((width-100), 200)
-        textSurfMoney, textRecMoney = text_objects(str(money) + "$", smallText, yellow)
-        textRecMoney.center = (30, height - 650)
-        textSurfHealth, textRecHealth = text_objects("Health: " + str(health), smallText, green)
+        textSurfMoney, textRecMoney = text_objects(str(player.money) + "$", smallText, yellow)
+        textRecMoney.center = (30, height  - 650)
+        textSurfHealth, textRecHealth = text_objects("Health: " + str(player.health), smallText, green)
         textRecHealth.center = ((width - 100), 30)
         textSurf3, textRec3 = text_objects("You have 60 seconds to place your turrets.", font, white)
         textRec3.center = ((width-650), 200)
@@ -380,12 +456,15 @@ def gameloop():
         gameDisplay.blit(textSurfMoney, textRecMoney)
         gameDisplay.blit(textSurfHealth, textRecHealth)
 
-        shipfile = "spaceship1.png"
+
         #if start == False:
-
-
+        enemies.update(player)
         enemies.draw(gameDisplay)
-        enemies.update()
+        for e in enemyarray[:]:
+            e.draw(gameDisplay)
+
+
+
         pygame.display.update()
 
 all_fonts = pygame.font.get_fonts()
