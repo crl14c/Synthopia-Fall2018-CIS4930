@@ -186,10 +186,6 @@ def paused():
 
 def placeTurret(w, h):
     #function to the turret in the turret place
-    smallText = pygame.font.Font('freesansbold.ttf', 20)
-    textSurf, textRec = text_objects("Exit", smallText, white)
-    textRec.center = ((width / 2) + 150, height / 2 + 25)
-    gameDisplay.blit(textSurf, textRec)
     imgTurret = pygame.image.load('resources/turret.png')
     gameDisplay.blit(imgTurret, (w - 5, h - 90))
 
@@ -224,6 +220,7 @@ def gameloop():
     font = pygame.font.SysFont('Consolas', 30)
     smallText = pygame.font.Font('freesansbold.ttf', 20)
     status = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    imgTurret = pygame.image.load('resources/turret.png')
 
     while run:
         seconds = 60 - (pygame.time.get_ticks() - start_ticks) / 1000
@@ -250,8 +247,9 @@ def gameloop():
         else:
             pygame.draw.rect(gameDisplay, grey, ((width - 150), 50, 100, 50))
         '''Click to place Turret'''
-        if 50 > mouse[0] > 0 and 450 > mouse[1] > 50:
-            pygame.draw.rect(gameDisplay, green, (0, 50, 50, 400))
+        if 100 > mouse[0] > 50 and 450 > mouse[1] > 50:
+            pygame.draw.rect(gameDisplay, green, (0, 50, 100, 400))
+
             if click[0] == 1:
                 if not placingTurret:
                     placingTurret = True
@@ -259,7 +257,9 @@ def gameloop():
                     placingTurret = False
 
         else:
-            pygame.draw.rect(gameDisplay, grey, (0, 50, 50, 400))
+            pygame.draw.rect(gameDisplay, grey, (0, 50, 100, 400))
+
+        gameDisplay.blit(imgTurret, (0, 200))
         '''Turret places being drawn'''
         if status[0] != 1:
             status[0] = turret(click, mouse, 75, height - 75, placingTurret, status[0])
@@ -325,7 +325,16 @@ def gameloop():
         textRec3.center = ((width-650), 200)
         textSurf4, textRec4 = text_objects("Turret Place Active", smallText, white)
         textRec4.center = ((width/2), height/2)
+        textSurf5, textRec5 = text_objects("Place", smallText, black)
+        textRec5.center = (50, 100)
+        textSurf6, textRec6 = text_objects("a", smallText, black)
+        textRec6.center = (50, 120)
+        textSurf7, textRec7 = text_objects("Turret", smallText, black)
+        textRec7.center = (50, 140)
         gameDisplay.blit(textSurf, textRec)
+        gameDisplay.blit(textSurf7, textRec7)
+        gameDisplay.blit(textSurf6, textRec6)
+        gameDisplay.blit(textSurf5, textRec5)
         if seconds > 0:
             gameDisplay.blit(textSurf2, textRec2)
         elif seconds <=0:
