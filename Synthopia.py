@@ -91,6 +91,8 @@ def settings():
     TextSurf, TextRect = text_objects("Settings", largeText)
     TextRect.center = ((width / 2), (height / 2 - 150))
     gameDisplay.blit(TextSurf, TextRect)
+    img = pygame.image.load('resources/space.jpg')
+    gameDisplay.blit(img, (0, 0))
 
     while True:
         for event in pygame.event.get():
@@ -182,21 +184,33 @@ def paused():
         clock.tick(15)
 
 
-def placeTurret():
+def placeTurret(w, h):
     #function to the turret in the turret place
     smallText = pygame.font.Font('freesansbold.ttf', 20)
     textSurf, textRec = text_objects("Exit", smallText, white)
     textRec.center = ((width / 2) + 150, height / 2 + 25)
     gameDisplay.blit(textSurf, textRec)
+    imgTurret = pygame.image.load('resources/turret.png')
+    gameDisplay.blit(imgTurret, (w - 5, h - 90))
 
 
-def turret(click, mouse, w, h, p):
+def turret(click, mouse, w, h, p, st):
     if w + 50 > mouse[0] > w and h + 50 > mouse[1] > h:
         pygame.draw.rect(gameDisplay, purple, (w, h, 50, 50))
         if click[0] == 1 and p:
-            placeTurret()
+            #placeTurret(w, h)
+            return 1
+        if st == 1:
+            return 1
+        else:
+            return 0
+
     else:
-        pygame.draw.rect(gameDisplay, pygame.Color(203, 132, 128, 1), (w, h, 50, 50))
+        if st == 1:
+            return 1
+        else:
+            pygame.draw.rect(gameDisplay, pygame.Color(203, 132, 128, 1), (w, h, 50, 50))
+            return 0
 
 
 def gameloop():
@@ -209,6 +223,7 @@ def gameloop():
     start_ticks = pygame.time.get_ticks()
     font = pygame.font.SysFont('Consolas', 30)
     smallText = pygame.font.Font('freesansbold.ttf', 20)
+    status = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
     while run:
         seconds = 60 - (pygame.time.get_ticks() - start_ticks) / 1000
@@ -246,23 +261,59 @@ def gameloop():
         else:
             pygame.draw.rect(gameDisplay, grey, (0, 50, 50, 400))
         '''Turret places being drawn'''
+        if status[0] != 1:
+            status[0] = turret(click, mouse, 75, height - 75, placingTurret, status[0])
+        if status[1] != 1:
+            status[1] = turret(click, mouse, 175, height - 175, placingTurret, status[1])
+        if status[2] != 1:
+            status[2] = turret(click, mouse, 275, height - 75, placingTurret, status[2])
+        if status[3] != 1:
+            status[3] = turret(click, mouse, 375, height - 175, placingTurret, status[3])
+        if status[4] != 1:
+            status[4] = turret(click, mouse, 475, height - 75, placingTurret, status[4])
+        if status[5] != 1:
+            status[5] = turret(click, mouse, 562.5, height - 175, placingTurret, status[5])
+        if status[6] != 1:
+            status[6] = turret(click, mouse, 650, height - 75, placingTurret, status[6])
+        if status[7] != 1:
+            status[7] = turret(click, mouse, 737.5, height - 175, placingTurret, status[7])
+        if status[8] != 1:
+            status[8] = turret(click, mouse, 825, height - 75, placingTurret, status[8])
+        if status[9] != 1:
+            status[9] = turret(click, mouse, 912.5, height - 175, placingTurret, status[9])
+        if status[10] != 1:
+            status[10] = turret(click, mouse, 1000, height - 75, placingTurret, status[10])
+        if status[11] != 1:
+            status[11] = turret(click, mouse, 1075, height - 175, placingTurret, status[11])
+        if status[12] != 1:
+            status[12] = turret(click, mouse, 1150, height - 75, placingTurret, status[12])
 
-
-        turret(click, mouse, 75, height - 75, placingTurret)
-        turret(click, mouse, 175, height - 175, placingTurret)
-        turret(click, mouse, 275, height - 75, placingTurret)
-        turret(click, mouse, 375, height - 175, placingTurret)
-        turret(click, mouse, 475, height - 75, placingTurret)
-        turret(click, mouse, 562.5, height - 175, placingTurret)
-        turret(click, mouse, 650, height - 75, placingTurret)
-        turret(click, mouse, 737.5, height - 175, placingTurret)
-        turret(click, mouse, 825, height - 75, placingTurret)
-        turret(click, mouse, 912.5, height - 175, placingTurret)
-        turret(click, mouse, 1000, height - 75, placingTurret)
-        turret(click, mouse, 1075, height - 175, placingTurret)
-        turret(click, mouse, 1150, height - 75, placingTurret)
-
-
+        if status[0] == 1:
+            placeTurret(75, height - 75)
+        if status[1] == 1:
+            placeTurret(175, height - 175)
+        if status[2] == 1:
+            placeTurret(275, height - 75)
+        if status[3] == 1:
+            placeTurret(375, height - 175)
+        if status[4] == 1:
+            placeTurret(475, height - 75)
+        if status[5] == 1:
+            placeTurret(562.5, height - 175)
+        if status[6] == 1:
+            placeTurret(650, height - 75)
+        if status[7] == 1:
+            placeTurret(737.5, height - 175)
+        if status[8] == 1:
+            placeTurret(825, height - 75)
+        if status[9] == 1:
+            placeTurret(912.5, height - 175)
+        if status[10] == 1:
+            placeTurret(1000, height - 75)
+        if status[11] == 1:
+            placeTurret(1075, height - 175)
+        if status[12] == 1:
+            placeTurret(1150, height - 75)
 
         textSurf, textRec = text_objects("Pause", smallText, black)
         textRec.center = ((width - 100), 75)
