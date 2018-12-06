@@ -6,6 +6,7 @@ pygame.mixer.init()
 width = 1300
 height = 680
 shipfile = "resources/spaceship1.png"
+turretfile = "resources/turret.png"
 musicfile = "resources/mainmenu.wav"
 size = (width, height)
 
@@ -153,7 +154,7 @@ def paused():
         if ((width / 2) - 100) > mouse[0] > (width / 2) - 200 and (height/2 + 100) > mouse[1] > (height/2):
             pygame.draw.rect(gameDisplay, lightblue, (((width / 2) - 200), height / 2, 100, 50))
             if click[0] == 1:
-                gameloop()
+                break
         else:
             pygame.draw.rect(gameDisplay, grey, (((width / 2) - 200), height / 2, 100, 50))
 
@@ -186,30 +187,35 @@ def paused():
         clock.tick(15)
 
 
-def placeTurret(w, h):
-    #function to the turret in the turret place
-    imgTurret = pygame.image.load('resources/turret.png')
-    gameDisplay.blit(imgTurret, (w - 5, h - 90))
+class Turret(pygame.sprite.Sprite):
+    def __init__(self, w, h):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load(turretfile)
+        self.rect = self.image.get_rect()
+        self.rect.x = w - 5
+        self.rect.y = h - 90
 
 
-def turret(click, mouse, w, h, p, st, m):
+def turret(click, mouse, w, h, p, st, m, t):
     if w + 50 > mouse[0] > w and h + 50 > mouse[1] > h:
         pygame.draw.rect(gameDisplay, purple, (w, h, 50, 50))
         if click[0] == 1 and p and m >= 250:
-            placeTurret(w, h)
+            turret2 = Turret(w, h)
             m = m - 250
-            return 1, m
+            t.add(turret2)
+            return 1, m, t
         if st == 1:
-            return 1, m
+            return 1, m, t
         else:
-            return 0, m
+            return 0, m, t
 
     else:
         if st == 1:
-            return 1, m
+            return 1, m, t
         else:
             pygame.draw.rect(gameDisplay, pygame.Color(203, 132, 128, 1), (w, h, 50, 50))
-            return 0, m
+            return 0, m, t
+
 
 class Ship(pygame.sprite.Sprite):
     def __init__(self):
@@ -232,6 +238,7 @@ def gameloop():
     smallText = pygame.font.Font('freesansbold.ttf', 20)
     status = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     imgTurret = pygame.image.load('resources/turret.png')
+    turretGroup = pygame.sprite.Group()
 
     while run:
         seconds = 60 - (pygame.time.get_ticks() - start_ticks) / 1000
@@ -258,7 +265,7 @@ def gameloop():
         else:
             pygame.draw.rect(gameDisplay, grey, ((width - 150), 50, 100, 50))
         '''Click to place Turret'''
-        if 50 > mouse[0] > 0 and 450 > mouse[1] > 50:
+        if 100 > mouse[0] > 0 and 450 > mouse[1] > 50:
             pygame.draw.rect(gameDisplay, purple, (0, 50, 100, 400))
             if click[0] == 1:
                 if not placingTurret:
@@ -270,60 +277,23 @@ def gameloop():
             pygame.draw.rect(gameDisplay, grey, (0, 50, 100, 400))
 
         gameDisplay.blit(imgTurret, (0, 200))
-        '''Turret places being drawn'''
-        if status[0] != 1:
-            status[0], money = turret(click, mouse, 75, height - 75, placingTurret, status[0], money)
-        if status[1] != 1:
-            status[1], money = turret(click, mouse, 175, height - 175, placingTurret, status[1], money)
-        if status[2] != 1:
-            status[2], money = turret(click, mouse, 275, height - 75, placingTurret, status[2], money)
-        if status[3] != 1:
-            status[3], money = turret(click, mouse, 375, height - 175, placingTurret, status[3], money)
-        if status[4] != 1:
-            status[4], money = turret(click, mouse, 475, height - 75, placingTurret, status[4], money)
-        if status[5] != 1:
-            status[5], money = turret(click, mouse, 562.5, height - 175, placingTurret, status[5], money)
-        if status[6] != 1:
-            status[6], money = turret(click, mouse, 650, height - 75, placingTurret, status[6], money)
-        if status[7] != 1:
-            status[7], money = turret(click, mouse, 737.5, height - 175, placingTurret, status[7], money)
-        if status[8] != 1:
-            status[8], money = turret(click, mouse, 825, height - 75, placingTurret, status[8], money)
-        if status[9] != 1:
-            status[9], money = turret(click, mouse, 912.5, height - 175, placingTurret, status[9], money)
-        if status[10] != 1:
-            status[10], money = turret(click, mouse, 1000, height - 75, placingTurret, status[10], money)
-        if status[11] != 1:
-            status[11], money = turret(click, mouse, 1075, height - 175, placingTurret, status[11], money)
-        if status[12] != 1:
-            status[12], money = turret(click, mouse, 1150, height - 75, placingTurret, status[12], money)
+        turretfile = "resources/turret.png"
 
-        if status[0] == 1:
-            placeTurret(75, height - 75)
-        if status[1] == 1:
-            placeTurret(175, height - 175)
-        if status[2] == 1:
-            placeTurret(275, height - 75)
-        if status[3] == 1:
-            placeTurret(375, height - 175)
-        if status[4] == 1:
-            placeTurret(475, height - 75)
-        if status[5] == 1:
-            placeTurret(562.5, height - 175)
-        if status[6] == 1:
-            placeTurret(650, height - 75)
-        if status[7] == 1:
-            placeTurret(737.5, height - 175)
-        if status[8] == 1:
-            placeTurret(825, height - 75)
-        if status[9] == 1:
-            placeTurret(912.5, height - 175)
-        if status[10] == 1:
-            placeTurret(1000, height - 75)
-        if status[11] == 1:
-            placeTurret(1075, height - 175)
-        if status[12] == 1:
-            placeTurret(1150, height - 75)
+        '''Turret places being drawn'''
+        status[0], money, turretGroup = turret(click, mouse, 75, height - 75, placingTurret, status[0], money, turretGroup)
+        status[1], money, turretGroup = turret(click, mouse, 175, height - 175, placingTurret, status[1], money, turretGroup)
+        status[2], money, turretGroup = turret(click, mouse, 275, height - 75, placingTurret, status[2], money, turretGroup)
+        status[3], money, turretGroup = turret(click, mouse, 375, height - 175, placingTurret, status[3], money, turretGroup)
+        status[4], money, turretGroup = turret(click, mouse, 475, height - 75, placingTurret, status[4], money, turretGroup)
+        status[5], money, turretGroup = turret(click, mouse, 562.5, height - 175, placingTurret, status[5], money, turretGroup)
+        status[6], money, turretGroup = turret(click, mouse, 650, height - 75, placingTurret, status[6], money, turretGroup)
+        status[7], money, turretGroup = turret(click, mouse, 737.5, height - 175, placingTurret, status[7], money, turretGroup)
+        status[8], money, turretGroup = turret(click, mouse, 825, height - 75, placingTurret, status[8], money, turretGroup)
+        status[9], money, turretGroup = turret(click, mouse, 912.5, height - 175, placingTurret, status[9], money, turretGroup)
+        status[10], money, turretGroup = turret(click, mouse, 1000, height - 75, placingTurret, status[10], money, turretGroup)
+        status[11], money, turretGroup = turret(click, mouse, 1075, height - 175, placingTurret, status[11], money, turretGroup)
+        status[12], money, turretGroup = turret(click, mouse, 1150, height - 75, placingTurret, status[12], money, turretGroup)
+
 
         textSurf, textRec = text_objects("Pause", smallText, black)
         textRec.center = ((width - 100), 75)
@@ -353,6 +323,7 @@ def gameloop():
         ship = Ship()
         enemies.add(ship)
         enemies.draw(gameDisplay)
+        turretGroup.draw(gameDisplay)
         gameDisplay.blit(textSurf9, textRec9)
         gameDisplay.blit(textSurf8, textRec8)
         gameDisplay.blit(textSurf7, textRec7)
