@@ -20,23 +20,24 @@ pygame.display.set_caption('Synthopia: Bastion of Scrap')
 clock = pygame.time.Clock()
 
 
-def text_objects(text, font):
-    textSurface = font.render(text, True, black)
+def text_objects(text, font, color=black):
+    textSurface = font.render(text, True, color)
     return textSurface, textSurface.get_rect()
 
 
 def mainscreen():
     main = True
+    img = pygame.image.load('resources/space.jpg')
     while main:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
 
-        gameDisplay.fill(white)
+        gameDisplay.blit(img, (0, 0))
         #Title = pygame.font.Font('')
         largeText = pygame.font.Font('freesansbold.ttf', 50)
-        TextSurf, TextRec = text_objects('Synthopia: Bastion of Scrap', largeText)
+        TextSurf, TextRec = text_objects('Synthopia: Bastion of Scrap', largeText, white)
         TextRec.center = (width/2, ((height/2) - 100))
         gameDisplay.blit(TextSurf, TextRec)
 
@@ -68,13 +69,13 @@ def mainscreen():
             pygame.draw.rect(gameDisplay, grey, (((width / 2) + 100), height / 2, 100, 50))
 
         smallText = pygame.font.Font('freesansbold.ttf', 20)
-        textSurf, textRec = text_objects("Play", smallText)
+        textSurf, textRec = text_objects("Play", smallText, black)
         textRec.center = ((width / 2) - 150, height/2 + 25)
         gameDisplay.blit(textSurf, textRec)
-        textSurf, textRec = text_objects("Settings", smallText)
+        textSurf, textRec = text_objects("Settings", smallText, black)
         textRec.center = ((width - 100), 75)
         gameDisplay.blit(textSurf, textRec)
-        textSurf, textRec = text_objects("Exit", smallText)
+        textSurf, textRec = text_objects("Exit", smallText, black )
         textRec.center = ((width / 2) + 150, height / 2 + 25)
         gameDisplay.blit(textSurf, textRec)
         pygame.display.update()
@@ -191,14 +192,21 @@ def turret(click, mouse, w, h, p):
         if click[0] == 1 and p:
             placeTurret()
     else:
-        pygame.draw.rect(gameDisplay, grey, (w, h, 50, 50))
+        pygame.draw.rect(gameDisplay, pygame.Color(203, 132, 128, 1), (w, h, 50, 50))
 
 
 def gameloop():
+    imgback= pygame.image.load('resources/earth.png')
     run = True
     placingTurret = False
+    start = True
+    money = 0
+    start_ticks = pygame.time.get_ticks()
+    font = pygame.font.SysFont('Consolas', 30)
+    smallText = pygame.font.Font('freesansbold.ttf', 20)
 
     while run:
+        seconds = 60 - (pygame.time.get_ticks() - start_ticks) / 1000
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -210,7 +218,7 @@ def gameloop():
                     pause = True
                     paused()
 
-        gameDisplay.fill(white)
+        gameDisplay.blit(imgback, (0, -450))
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
         '''pause button box made here'''
@@ -222,8 +230,8 @@ def gameloop():
         else:
             pygame.draw.rect(gameDisplay, grey, ((width - 150), 50, 100, 50))
         '''Click to place Turret'''
-        if 100 > mouse[0] > 0 and 150 > mouse[1] > 50:
-            pygame.draw.rect(gameDisplay, grey, (0, 50, 100, 100))
+        if 50 > mouse[0] > 0 and 450 > mouse[1] > 50:
+            pygame.draw.rect(gameDisplay, green, (0, 50, 50, 400))
             if click[0] == 1:
                 if not placingTurret:
                     placingTurret = True
@@ -231,8 +239,10 @@ def gameloop():
                     placingTurret = False
 
         else:
-            pygame.draw.rect(gameDisplay, grey, (0, 50, 100, 100))
+            pygame.draw.rect(gameDisplay, grey, (0, 50, 50, 400))
         '''Turret places being drawn'''
+
+
         turret(click, mouse, 75, height - 75, placingTurret)
         turret(click, mouse, 175, height - 175, placingTurret)
         turret(click, mouse, 275, height - 75, placingTurret)
@@ -247,12 +257,22 @@ def gameloop():
         turret(click, mouse, 1075, height - 175, placingTurret)
         turret(click, mouse, 1150, height - 75, placingTurret)
 
-        smallText = pygame.font.Font('freesansbold.ttf', 20)
-        textSurf, textRec = text_objects("Pause", smallText)
+
+
+        textSurf, textRec = text_objects("Pause", smallText, black)
         textRec.center = ((width - 100), 75)
+        textSurf2, textRec2 = text_objects(str(round(seconds)),font, white)
+        textRec2.center = ((width-100), 200)
+        textSurf3, textRec3 = text_objects("You have 60 seconds to place your turrets.", font, white)
+        textRec3.center = ((width-650), 200)
         gameDisplay.blit(textSurf, textRec)
+        if seconds > 0:
+            gameDisplay.blit(textSurf2, textRec2)
+
+        if seconds > 30:
+            gameDisplay.blit(textSurf3,textRec3)
         pygame.display.update()
-        clock.tick(60)
+
 
 
 all_fonts = pygame.font.get_fonts()
