@@ -2,8 +2,10 @@ import pygame
 import sys
 
 pygame.init()
+pygame.mixer.init()
 width = 1300
 height = 680
+musicfile = "resources/mainmenu.wav"
 size = (width, height)
 
 #colors
@@ -28,6 +30,8 @@ def text_objects(text, font, color=black):
 def mainscreen():
     main = True
     img = pygame.image.load('resources/space.jpg')
+    pygame.mixer.music.load(musicfile)
+    pygame.mixer.music.play(loops=-1)
     while main:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -181,7 +185,7 @@ def paused():
 def placeTurret():
     #function to the turret in the turret place
     smallText = pygame.font.Font('freesansbold.ttf', 20)
-    textSurf, textRec = text_objects("Exit", smallText)
+    textSurf, textRec = text_objects("Exit", smallText, white)
     textRec.center = ((width / 2) + 150, height / 2 + 25)
     gameDisplay.blit(textSurf, textRec)
 
@@ -264,6 +268,8 @@ def gameloop():
         textRec.center = ((width - 100), 75)
         textSurf2, textRec2 = text_objects(str(round(seconds)),font, white)
         textRec2.center = ((width-100), 200)
+        textSurfMoney, textRecMoney = text_objects(str(money) + "$", smallText, white)
+        textRecMoney.center = ((width/2), height - 650)
         textSurf3, textRec3 = text_objects("You have 60 seconds to place your turrets.", font, white)
         textRec3.center = ((width-650), 200)
         textSurf4, textRec4 = text_objects("Turret Place Active", smallText, white)
@@ -280,6 +286,7 @@ def gameloop():
         if placingTurret:
             gameDisplay.blit(textSurf4, textRec4)
 
+        gameDisplay.blit(textSurfMoney, textRecMoney)
         pygame.display.update()
 
 
