@@ -151,7 +151,7 @@ def paused():
         if ((width / 2) - 100) > mouse[0] > (width / 2) - 200 and (height/2 + 100) > mouse[1] > (height/2):
             pygame.draw.rect(gameDisplay, lightblue, (((width / 2) - 200), height / 2, 100, 50))
             if click[0] == 1:
-                gameloop()
+                return
         else:
             pygame.draw.rect(gameDisplay, grey, (((width / 2) - 200), height / 2, 100, 50))
 
@@ -210,6 +210,7 @@ def turret(click, mouse, w, h, p, st):
 
 
 def gameloop():
+    global pause
     imgback= pygame.image.load('resources/earth.png')
     run = True
     placingTurret = False
