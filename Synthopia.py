@@ -220,7 +220,9 @@ def turret(click, mouse, w, h, p, st, m, t):
 class Ship(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
+        self.health = random.randint(75, 150)
         self.image = pygame.image.load(shipfile)
+        self.image = pygame.transform.rotate(self.image,180)
         self.rect = self.image.get_rect()
         self.rect.center = (width / 2, 0)
         self.movement = 2
@@ -255,7 +257,6 @@ def gameloop():
     if enemies.empty:
         ship = Ship()
         enemies.add(ship)
-    turretGroup = pygame.sprite.Group()
 
     while run:
         seconds = 60 - (pygame.time.get_ticks() - start_ticks) / 1000
@@ -386,7 +387,6 @@ def gameloop():
         enemies.draw(gameDisplay)
         enemies.update()
         pygame.display.update()
-
 
 all_fonts = pygame.font.get_fonts()
 mainscreen()
