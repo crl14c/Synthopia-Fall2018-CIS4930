@@ -8,6 +8,7 @@ width = 1300
 height = 680
 shipfile = "resources/spaceship1.png"
 musicfile = "resources/mainmenu.wav"
+turretfile = "resources/turret.png"
 size = (width, height)
 
 #colors
@@ -154,7 +155,7 @@ def paused():
         if ((width / 2) - 100) > mouse[0] > (width / 2) - 200 and (height/2 + 100) > mouse[1] > (height/2):
             pygame.draw.rect(gameDisplay, lightblue, (((width / 2) - 200), height / 2, 100, 50))
             if click[0] == 1:
-                gameloop()
+                break
         else:
             pygame.draw.rect(gameDisplay, grey, (((width / 2) - 200), height / 2, 100, 50))
 
@@ -199,7 +200,7 @@ class Turret(pygame.sprite.Sprite):
 def turret(click, mouse, w, h, p, st, m, t):
     if w + 50 > mouse[0] > w and h + 50 > mouse[1] > h:
         pygame.draw.rect(gameDisplay, purple, (w, h, 50, 50))
-        if click[0] == 1 and p and m >= 250:
+        if click[0] == 1 and p and m >= 250 and st != 1:
             turret2 = Turret(w, h)
             m = m - 250
             t.add(turret2)
@@ -237,9 +238,6 @@ class Ship(pygame.sprite.Sprite):
             self.movement = 1 + self.movement*-1
 
 
-
-
-
 def gameloop():
     global pause
     imgback= pygame.image.load('resources/earth.png')
@@ -254,6 +252,8 @@ def gameloop():
     status = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     imgTurret = pygame.image.load('resources/turret.png')
     enemies = pygame.sprite.Group()
+    turretGroup = pygame.sprite.Group()
+
     if enemies.empty:
         ship = Ship()
         enemies.add(ship)
@@ -283,7 +283,7 @@ def gameloop():
         else:
             pygame.draw.rect(gameDisplay, grey, ((width - 150), 50, 100, 50))
         '''Click to place Turret'''
-        if 50 > mouse[0] > 0 and 450 > mouse[1] > 50:
+        if 100 > mouse[0] > 0 and 450 > mouse[1] > 50:
             pygame.draw.rect(gameDisplay, purple, (0, 50, 100, 400))
             if click[0] == 1:
                 if not placingTurret:
@@ -309,33 +309,6 @@ def gameloop():
         status[10], money, turretGroup = turret(click, mouse, 1000, height - 75, placingTurret, status[10], money, turretGroup)
         status[11], money, turretGroup = turret(click, mouse, 1075, height - 175, placingTurret, status[11], money, turretGroup)
         status[12], money, turretGroup = turret(click, mouse, 1150, height - 75, placingTurret, status[12], money, turretGroup)
-
-        if status[0] == 1:
-            placeTurret(75, height - 75)
-        if status[1] == 1:
-            placeTurret(175, height - 175)
-        if status[2] == 1:
-            placeTurret(275, height - 75)
-        if status[3] == 1:
-            placeTurret(375, height - 175)
-        if status[4] == 1:
-            placeTurret(475, height - 75)
-        if status[5] == 1:
-            placeTurret(562.5, height - 175)
-        if status[6] == 1:
-            placeTurret(650, height - 75)
-        if status[7] == 1:
-            placeTurret(737.5, height - 175)
-        if status[8] == 1:
-            placeTurret(825, height - 75)
-        if status[9] == 1:
-            placeTurret(912.5, height - 175)
-        if status[10] == 1:
-            placeTurret(1000, height - 75)
-        if status[11] == 1:
-            placeTurret(1075, height - 175)
-        if status[12] == 1:
-            placeTurret(1150, height - 75)
 
         textSurf, textRec = text_objects("Pause", smallText, black)
         textRec.center = ((width - 100), 75)
@@ -383,7 +356,7 @@ def gameloop():
         shipfile = "spaceship1.png"
         #if start == False:
 
-
+        turretGroup.draw(gameDisplay)
         enemies.draw(gameDisplay)
         enemies.update()
         pygame.display.update()
