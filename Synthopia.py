@@ -5,6 +5,7 @@ pygame.init()
 pygame.mixer.init()
 width = 1300
 height = 680
+shipfile = "resources/spaceship1.png"
 musicfile = "resources/mainmenu.wav"
 size = (width, height)
 
@@ -15,6 +16,7 @@ purple = (175, 0, 175)
 green = (0, 255, 0)
 grey = (205, 205, 205)
 lightblue = (173, 216, 230)
+yellow = (255,255,51)
 
 
 gameDisplay = pygame.display.set_mode(size)
@@ -25,6 +27,7 @@ clock = pygame.time.Clock()
 def text_objects(text, font, color=black):
     textSurface = font.render(text, True, color)
     return textSurface, textSurface.get_rect()
+
 
 
 def mainscreen():
@@ -198,6 +201,13 @@ def turret(click, mouse, w, h, p):
     else:
         pygame.draw.rect(gameDisplay, pygame.Color(203, 132, 128, 1), (w, h, 50, 50))
 
+class Ship(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = pygame.image.load(shipfile)
+        self.rect = self.image.get_rect()
+        self.rect.center = (width / 2, height / 2)
+
 
 def gameloop():
     imgback= pygame.image.load('resources/earth.png')
@@ -223,7 +233,7 @@ def gameloop():
                     pause = True
                     paused()
 
-        gameDisplay.blit(imgback, (0, -450))
+        gameDisplay.blit(imgback, (0, -400))
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
         '''pause button box made here'''
@@ -268,13 +278,20 @@ def gameloop():
         textRec.center = ((width - 100), 75)
         textSurf2, textRec2 = text_objects(str(round(seconds)),font, white)
         textRec2.center = ((width-100), 200)
-        textSurfMoney, textRecMoney = text_objects(str(money) + "$", smallText, white)
-        textRecMoney.center = ((width/2), height - 650)
+        textSurfMoney, textRecMoney = text_objects(str(money) + "$", smallText, yellow)
+        textRecMoney.center = (30, height - 650)
+        textSurfHealth, textRecHealth = text_objects("Health: " + str(health), smallText, green)
+        textRecHealth.center = ((width - 100), 30)
         textSurf3, textRec3 = text_objects("You have 60 seconds to place your turrets.", font, white)
         textRec3.center = ((width-650), 200)
         textSurf4, textRec4 = text_objects("Turret Place Active", smallText, white)
         textRec4.center = ((width/2), height/2)
         gameDisplay.blit(textSurf, textRec)
+        enemies = pygame.sprite.Group()
+        shipfile = "spaceship1.png"
+        ship = Ship()
+        enemies.add(ship)
+        enemies.draw(gameDisplay)
         if seconds > 0:
             gameDisplay.blit(textSurf2, textRec2)
         elif seconds <=0:
@@ -287,6 +304,8 @@ def gameloop():
             gameDisplay.blit(textSurf4, textRec4)
 
         gameDisplay.blit(textSurfMoney, textRecMoney)
+        gameDisplay.blit(textSurfHealth, textRecHealth)
+
         pygame.display.update()
 
 
