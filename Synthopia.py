@@ -13,6 +13,7 @@ imgTurret = pygame.image.load('resources/turret.png')
 shipfile = "resources/spaceship1.png"
 font = pygame.font.SysFont('Consolas', 30)
 smallText = pygame.font.Font('freesansbold.ttf', 20)
+turretfile = "resources/turret.png"
 size = (width, height)
 
 #colors
@@ -179,7 +180,7 @@ def paused():
             pygame.draw.rect(gameDisplay, grey, ((width / 2) - 75, (height / 2) + 100, 150, 50))
 
         smallText = pygame.font.Font('freesansbold.ttf', 20)
-        textSurf, textRec = text_objects("Resume", smallText)
+        textSurf, textRec = text_objects("Unpause", smallText)
         textRec.center = ((width / 2) - 150, height / 2 + 25)
         gameDisplay.blit(textSurf, textRec)
         textSurf, textRec = text_objects("Main Menu", smallText)
@@ -200,15 +201,11 @@ class Turret(pygame.sprite.Sprite):
         self.rect.x = w - 5
         self.rect.y = h - 90
 
-def placeTurret(w, h):
-    #function to the turret in the turret place
-    imgTurret = pygame.image.load('resources/turret.png')
-    gameDisplay.blit(imgTurret, (w - 5, h - 90))
 
 def turret(click, mouse, w, h, p, st, m, t):
     if w + 50 > mouse[0] > w and h + 50 > mouse[1] > h:
         pygame.draw.rect(gameDisplay, purple, (w, h, 50, 50))
-        if click[0] == 1 and p and m >= 250:
+        if click[0] == 1 and p and m >= 250 and st != 1:
             turret2 = Turret(w, h)
             m = m - 250
             t.add(turret2)
@@ -245,7 +242,7 @@ class Ship(pygame.sprite.Sprite):
         self.image = pygame.image.load(shipfile)
         self.image = pygame.transform.rotate(self.image,180)
         self.rect = self.image.get_rect()
-        self.rect.center    = (width / 2, 0)
+        self.rect.center = (width / 2, 0)
         self.movement = 2
         self.dead = False
         self.cooldown = False
@@ -459,6 +456,8 @@ def gameloop():
 
         #if start == False:
         enemies.update(player)
+
+        turretGroup.draw(gameDisplay)
         enemies.draw(gameDisplay)
         for e in enemyarray[:]:
             e.draw(gameDisplay)
