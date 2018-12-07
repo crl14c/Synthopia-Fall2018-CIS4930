@@ -198,13 +198,15 @@ class Turret(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load(turretfile)
         self.rect = self.image.get_rect()
-        self.rect.x = w - 5
-        self.rect.y = h - 90
+        self.rect.centerx = w
+        self.rect.centery = h
+        self.rect.x = w
+        self.rect.y = h
         self.bullets =[]
         self.cooldown = False
         self.timer = 0
         self.bullets = []
-        self.bulletcolor = (255, 0, 0)
+        self.bulletcolor = green
 
     def update(self, enemyship):
         if not self.cooldown:
@@ -217,10 +219,11 @@ class Turret(pygame.sprite.Sprite):
                 self.timer = int(x)
                 self.cooldown = False
 
+
         self.update_bullets(enemyship)
 
     def fire(self,enemyship):
-        self.bullets.append(Laser(self.rect.center, self.bulletcolor))
+        self.bullets.append(Laser(self.rect.center, self.rect, green,-2))
 
     def update_bullets(self,enemyship):
         if self.bullets:
@@ -228,8 +231,11 @@ class Turret(pygame.sprite.Sprite):
                 obj.update()
                 if obj.rect.y <= 0:
                     self.bullets.remove(obj)
-                    print("removed")
 
+    def draw(self,surf):
+        if self.bullets:
+            for bullet in self.bullets:
+                surf.blit(bullet.image, bullet.rect)
 
 
 
@@ -309,7 +315,6 @@ class Ship(pygame.sprite.Sprite):
 
         if self.cooldown:
             x = pygame.time.get_ticks() / 1500
-            x = pygame.time.get_ticks() / 1500
             if int(self.timer) < int(x):
                 self.timer = int(x)
                 self.cooldown = False
@@ -318,7 +323,7 @@ class Ship(pygame.sprite.Sprite):
 
 
     def fire(self):
-        self.bullets.append(Laser(self.rect.center, self.bulletcolor))
+        self.bullets.append(Laser(self.rect.center, self.rect, self.bulletcolor))
 
     def update_bullets(self,player):
        if self.bullets:
@@ -335,13 +340,13 @@ class Ship(pygame.sprite.Sprite):
                 surf.blit(bullet.image, bullet.rect)
 
 class Laser:
-    def __init__(self, loc, screen_rect):
+    def __init__(self, loc, screen_rect, color=green,speed=5):
         self.screen_rect = screen_rect
-        self.image = pygame.Surface((5,20)).convert_alpha()
+        self.image = pygame.Surface((5,10)).convert_alpha()
         self.mask = pygame.mask.from_surface(self.image)
-        self.image.fill((255, 0 ,0))
+        self.image.fill(color)
         self.rect = self.image.get_rect(center = loc)
-        self.speed = 5
+        self.speed = speed
 
     def update(self):
         self.rect.y += self.speed
@@ -365,7 +370,6 @@ def gameloop():
     turretarray = []
     enemyarray = []
     ship = Ship(shipfile, player)
-    turret1= Turret(50, 50, ship)
 
     while run:
         seconds = 60 - (pygame.time.get_ticks() - start_ticks) / 1000
@@ -423,43 +427,43 @@ def gameloop():
 
         if status[0] == 1:
             placeTurret(75, height - 75)
-            turretarray.append(turret1)
+            turretarray.append(Turret(75, height-75,ship))
         if status[1] == 1:
             placeTurret(175, height - 175)
-            turretarray.append(turret1)
+            turretarray.append(Turret(175, height - 175,ship))
         if status[2] == 1:
             placeTurret(275, height - 75)
-            turretarray.append(turret1)
+            turretarray.append(Turret(275, height - 175,ship))
         if status[3] == 1:
             placeTurret(375, height - 175)
-            turretarray.append(turret1)
+            turretarray.append(Turret(375, height - 175,ship))
         if status[4] == 1:
             placeTurret(475, height - 75)
-            turretarray.append(turret1)
+            turretarray.append(Turret(475, height - 175,ship))
         if status[5] == 1:
             placeTurret(562.5, height - 175)
-            turretarray.append(turret1)
+            turretarray.append(Turret(575, height - 175,ship))
         if status[6] == 1:
             placeTurret(650, height - 75)
-            turretarray.append(turret1)
+            turretarray.append(Turret(675, height - 175,ship))
         if status[7] == 1:
             placeTurret(737.5, height - 175)
-            turretarray.append(turret1)
+            turretarray.append(Turret(775, height - 175,ship))
         if status[8] == 1:
             placeTurret(825, height - 75)
-            turretarray.append(turret1)
+            turretarray.append(Turret(875, height - 175,ship))
         if status[9] == 1:
             placeTurret(912.5, height - 175)
-            turretarray.append(turret1)
+            turretarray.append(Turret(975, height - 175,ship))
         if status[10] == 1:
             placeTurret(1000, height - 75)
-            turretarray.append(turret1)
+            turretarray.append(Turret(1075, height - 175,ship))
         if status[11] == 1:
             placeTurret(1075, height - 175)
-            turretarray.append(turret1)
+            turretarray.append(Turret(1075, height - 175,ship))
         if status[12] == 1:
             placeTurret(1150, height - 75)
-            turretarray.append(turret1)
+            turretarray.append(Turret(1175, height - 175,ship))
 
         textSurf, textRec = text_objects("Pause", smallText, black)
         textRec.center = ((width - 100), 75)
@@ -469,7 +473,7 @@ def gameloop():
         textRecMoney.center = (30, height  - 650)
         textSurfHealth, textRecHealth = text_objects("Health: " + str(player.health), smallText, green)
         textRecHealth.center = ((width - 100), 30)
-        textSurf3, textRec3 = text_objects("You have 60 seconds to place your turrets.", font, white)
+        textSurf3, textRec3 = text_objects("You have 30 seconds to place your turrets.", font, white)
         textRec3.center = ((width-650), 200)
         textSurf4, textRec4 = text_objects("Turret Place Active", smallText, white)
         textRec4.center = ((width/2), height/2)
@@ -490,9 +494,9 @@ def gameloop():
         gameDisplay.blit(textSurf7, textRec7)
         gameDisplay.blit(textSurf6, textRec6)
         gameDisplay.blit(textSurf5, textRec5)
-        if seconds > 0:
+        if seconds > 30:
             gameDisplay.blit(textSurf2, textRec2)
-        elif seconds <=0:
+        elif seconds <=30:
             start = False
 
         if seconds > 30:
@@ -519,6 +523,7 @@ def gameloop():
 
             if len(enemyarray) > 0:
                 for tur in turretarray[:]:
+                    tur.draw(gameDisplay)
                     tur.update(ship)
 
         turretGroup.draw(gameDisplay)
