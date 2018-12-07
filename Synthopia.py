@@ -194,7 +194,7 @@ def paused():
 
 
 class Turret(pygame.sprite.Sprite):
-    def __init__(self, w, h):
+    def __init__(self, w, h, enemyship):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load(turretfile)
         self.rect = self.image.get_rect()
@@ -309,8 +309,9 @@ class Ship(pygame.sprite.Sprite):
 
         if self.cooldown:
             x = pygame.time.get_ticks() / 1500
-            if self.timer < x:
-                self.timer +=1
+            x = pygame.time.get_ticks() / 1500
+            if int(self.timer) < int(x):
+                self.timer = int(x)
                 self.cooldown = False
 
         self.update_bullets(player)
@@ -331,9 +332,7 @@ class Ship(pygame.sprite.Sprite):
     def draw(self,surf):
         if self.bullets:
             for bullet in self.bullets:
-
                 surf.blit(bullet.image, bullet.rect)
-        surf.blit(bullet.image, bullet.rect)
 
 class Laser:
     def __init__(self, loc, screen_rect):
