@@ -96,12 +96,12 @@ def mainscreen():
 
 def settings():
     gameDisplay.fill(white)
-    largeText = pygame.font.SysFont("comicsansms", 50)
-    TextSurf, TextRect = text_objects("Settings", largeText, white)
-    TextRect.center = ((width / 2), (height / 2 - 150))
-    gameDisplay.blit(TextSurf, TextRect)
     img = pygame.image.load('resources/space.jpg')
     gameDisplay.blit(img, (0, 0))
+    largeText = pygame.font.Font('freesansbold.ttf', 50)
+    TextSurf, TextRec = text_objects('Settings', largeText, white)
+    TextRec.center = (width / 2, ((height / 2) - 100))
+    gameDisplay.blit(TextSurf, TextRec)
 
     while True:
         for event in pygame.event.get():
@@ -120,6 +120,52 @@ def settings():
             pygame.draw.rect(gameDisplay, grey, (((width / 2) - 75), (height / 2) - 50, 150, 50))
 
         if ((width / 2) + 50) > mouse[0] > (width / 2) - 50 and (height/2) + 250 > mouse[1] > (height/2) + 150:
+            pygame.draw.rect(gameDisplay, lightblue, (((width / 2) - 50), (height / 2) + 150, 100, 50))
+            if click[0] == 1:
+                pygame.quit()
+                quit()
+        else:
+            pygame.draw.rect(gameDisplay, grey, (((width / 2) - 50), (height / 2) + 150, 100, 50))
+
+        smallText = pygame.font.Font('freesansbold.ttf', 20)
+        textSurf, textRec = text_objects("Main Menu", smallText)
+        textRec.center = ((width / 2), height / 2 - 25)
+        gameDisplay.blit(textSurf, textRec)
+        textSurf, textRec = text_objects("Exit", smallText)
+        textRec.center = (width / 2, height / 2 + 175)
+        gameDisplay.blit(textSurf, textRec)
+        pygame.display.update()
+        clock.tick(15)
+
+
+def gameover():
+    gameDisplay.fill(white)
+    img = pygame.image.load('resources/earth.png')
+    gameDisplay.blit(img, (0, -500))
+    largeText = pygame.font.SysFont("freesansbold.ttf", 60)
+    TextSurf, TextRect = text_objects('Game Over', largeText, white)
+    TextRect.center = (width/2, height/2 - 150)
+    gameDisplay.blit(TextSurf, TextRect)
+
+    while True:
+        for event in pygame.event.get():
+            # print(event)
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+
+        mouse = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()
+        if ((width / 2) + 75) > mouse[0] > (width / 2) - 75 and (height / 2 + 50) > mouse[1] > (
+                height / 2) - 50:
+            pygame.draw.rect(gameDisplay, lightblue, (((width / 2) - 75), (height / 2) - 50, 150, 50))
+            if click[0] == 1:
+                mainscreen()
+        else:
+            pygame.draw.rect(gameDisplay, grey, (((width / 2) - 75), (height / 2) - 50, 150, 50))
+
+        if ((width / 2) + 50) > mouse[0] > (width / 2) - 50 and (height / 2) + 250 > mouse[1] > (
+                height / 2) + 150:
             pygame.draw.rect(gameDisplay, lightblue, (((width / 2) - 50), (height / 2) + 150, 100, 50))
             if click[0] == 1:
                 pygame.quit()
@@ -237,9 +283,6 @@ class Turret(pygame.sprite.Sprite):
             for bullet in self.bullets:
                 surf.blit(bullet.image, bullet.rect)
 
-
-
-
 def turret(click, mouse, w, h, p, st, m, t, enemyship):
     if w + 50 > mouse[0] > w and h + 50 > mouse[1] > h:
         pygame.draw.rect(gameDisplay, purple, (w, h, 50, 50))
@@ -260,10 +303,12 @@ def turret(click, mouse, w, h, p, st, m, t, enemyship):
             pygame.draw.rect(gameDisplay, pygame.Color(203, 132, 128, 1), (w, h, 50, 50))
             return 0, m, t
 
+
 def placeTurret(w, h):
     #function to the turret in the turret place
     imgTurret = pygame.image.load('resources/turret.png')
     gameDisplay.blit(imgTurret, (w - 5, h - 90))
+
 
 class Player():
     def __init__(self):
@@ -293,7 +338,6 @@ class Ship(pygame.sprite.Sprite):
         self.bullets = []
         self.bulletcolor= (255, 0 , 0)
 
-
     def update(self, player):
         self.rect.x += self.movement
         self.rect.y += self.movement
@@ -321,15 +365,14 @@ class Ship(pygame.sprite.Sprite):
 
         self.update_bullets(player)
 
-
     def fire(self):
         self.bullets.append(Laser(self.rect.center, self.rect, self.bulletcolor))
 
     def update_bullets(self,player):
-       if self.bullets:
-           for obj in self.bullets[:]:
-               obj.update()
-               if obj.rect.y >=680:
+        if self.bullets:
+            for obj in self.bullets[:]:
+                obj.update()
+                if obj.rect.y >=680:
                    player.damagePlayer(1)
                    self.bullets.remove(obj)
                    print("removed")
@@ -338,6 +381,7 @@ class Ship(pygame.sprite.Sprite):
         if self.bullets:
             for bullet in self.bullets:
                 surf.blit(bullet.image, bullet.rect)
+
 
 class Laser:
     def __init__(self, loc, screen_rect, color=green,speed=5):
@@ -353,7 +397,6 @@ class Laser:
 
     def render(self, surf):
         surf.blit(self.image, self.rect)
-
 
 
 def gameloop():
@@ -525,6 +568,9 @@ def gameloop():
                 for tur in turretarray[:]:
                     tur.draw(gameDisplay)
                     tur.update(ship)
+
+        if player.health == 0:
+            gameover()
 
         turretGroup.draw(gameDisplay)
         enemies.update(player)
