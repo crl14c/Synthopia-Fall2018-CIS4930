@@ -13,7 +13,7 @@ Libraries:
 
 Separation of work:
 Alexandra Sayers
-  - created mainscreen, pause screen, settings screen, turrets, gameloop()
+  - created mainscreen, pause screen, settings screen, turrets, gameloop(), gameover screen
 Jesse Peek
   -added background images, music, added enemies, turrets shooting and enemies shooting, created timer, player class, gameloop()
 
